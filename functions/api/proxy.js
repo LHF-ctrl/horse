@@ -1,8 +1,4 @@
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request));
-});
-
-async function handleRequest(request) {
+export async function onRequest({ request }) {
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
@@ -17,7 +13,10 @@ async function handleRequest(request) {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   }
 
@@ -43,7 +42,10 @@ async function handleRequest(request) {
     } else {
       return new Response(JSON.stringify({ error: 'Invalid request type' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
       });
     }
     
