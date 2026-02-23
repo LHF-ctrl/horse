@@ -341,28 +341,25 @@
             console.log('生成贺词提示词:', prompt);
 
             try {
-                console.log('调用文本生成API');
-                const apiEndpoint = API_CONFIG.endpoint + '/chat/completions';
-                console.log('使用API端点:', apiEndpoint);
-                console.log('使用模型:', API_CONFIG.modelText);
+                console.log('调用文本生成API（通过代理）');
                 
                 const timeoutPromise = new Promise((_, reject) => {
                     setTimeout(() => reject(new Error('API调用超时')), API_CONFIG.timeout);
                 });
                 
-                const fetchPromise = fetch(apiEndpoint, {
+                const fetchPromise = fetch('/api/proxy', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_CONFIG.apiKey}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        type: 'text',
+                        authorization: `Bearer ${API_CONFIG.apiKey}`,
                         model: API_CONFIG.modelText,
                         messages: [{ role: 'user', content: prompt }],
                         max_tokens: 200,
                         temperature: 0.9,
-                        top_p: 0.95,
-                        stream: false
+                        top_p: 0.95
                     })
                 });
                 
@@ -425,12 +422,13 @@
                     setTimeout(() => reject(new Error('API调用超时')), API_CONFIG.timeout);
                 });
                 
-                const fetchPromise = fetch('/api/generate-image', {
+                const fetchPromise = fetch('/api/proxy', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        type: 'image',
                         authorization: `Bearer ${API_CONFIG.apiKey}`,
                         body: requestBody
                     })
