@@ -1,8 +1,5 @@
 {
   "functions": {
-    "api/proxy": {
-      "path": "/api/proxy",
-      "handler": "functions/api/proxy.js"
-    }
+    "directory": "node-functions"
   }
 }
