@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .success {
+            color: green;
+            border-left: 4px solid green;
+        }
+        .error {
+            color: red;
+            border-left: 4px solid red;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>简单前端测试</h1>
+        
+        <div class="status" id="status">
+            页面加载中...
+        </div>
+        
+        <button onclick="testFunction()">测试按钮</button>
+    </div>
+    
+    <script>
+        // 页面加载完成
+        window.onload = function() {
+            console.log('页面加载完成');
+            document.getElementById('status').innerHTML = '<div class="success">✅ 页面加载成功！</div>';
+        };
+        
+        // 测试函数
+        function testFunction() {
+            console.log('按钮点击测试');
+            document.getElementById('status').innerHTML = '<div class="success">✅ 按钮点击测试成功！</div>';
+        }
+        
+        // 脚本加载测试
+        console.log('脚本加载成功');
+    </script>
+</body>
+</html>

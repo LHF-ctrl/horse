@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            background-color: #ffebee;
+            border-color: #ffcdd2;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API测试页面</h1>
+        
+        <div class="test-section">
+            <h2>1. 文本生成API测试</h2>
+            <button onclick="testTextAPI()">测试文本生成API</button>
+            <div id="textResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. 图片生成API测试</h2>
+            <button onclick="testImageAPI()">测试图片生成API</button>
+            <div id="imageResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. 直接HTTP请求测试</h2>
+            <button onclick="testDirectRequest()">测试直接HTTP请求</button>
+            <div id="directResult" class="result"></div>
+        </div>
+    </div>
+    
+    <script>
+        // API配置
+        const API_CONFIG = {
+            // 直接使用阿里云DashScope API
+            endpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+            apiKey: 'sk-156a6786ce8545548561ac2b188cfc5c',
+            modelText: 'qwen3-max',
+            modelImage: 'qwen-image-max',
+            timeout: 30000
+        };
+        
+        // 构建请求URL
+        function buildRequestUrl(url) {
+            return url;
+        }
+        
+        // 显示结果
+        function showResult(elementId, content, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = content;
+            element.className = isError ? 'result error' : 'result';
+        }
+        
+        // 测试文本生成API
+        async function testTextAPI() {
+            showResult('textResult', '正在测试文本生成API...');
+            
+            try {
+                const prompt = '请生成2026年马年新春贺词，要求简洁优美，适合长辈使用。';
+                
+                // 直接使用阿里云DashScope API端点
+                const apiEndpoint = API_CONFIG.endpoint + '/chat/completions';
+                console.log('使用API端点:', apiEndpoint);
+                console.log('使用模型:', API_CONFIG.modelText);
+                
+                // 发起API请求
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: API_CONFIG.modelText,
+                        messages: [
+                            {
+                                role: 'user',
+                                content: prompt
+                            }
+                        ],
+                        max_tokens: 200,
+                        temperature: 0.9,
+                        top_p: 0.95,
+                        stream: false
+                    })
+                });
+                
+                console.log('文本API响应状态:', response.status);
+                console.log('文本API响应头:', Object.fromEntries(response.headers.entries()));
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    showResult('textResult', `文本API调用失败:\n状态: ${response.status}\n错误: ${JSON.stringify(errorData)}`, true);
+                    return;
+                }
+                
+                const data = await response.json();
+                showResult('textResult', `文本API调用成功!\n响应: ${JSON.stringify(data, null, 2)}`);
+            } catch (error) {
+                console.error('文本API测试错误:', error);
+                showResult('textResult', `文本API测试错误:\n${error.toString()}`, true);
+            }
+        }
+        
+        // 测试图片生成API
+        async function testImageAPI() {
+            showResult('imageResult', '正在测试图片生成API...');
+            
+            try {
+                const prompt = '2026年马年新春贺卡，红色背景，金色装饰，马的图案，9:16比例，高清质量';
+                console.log('图片生成提示词:', prompt);
+                
+                // 使用正确的API端点和模型
+                const apiEndpoint = 'https://dashscope.aliyuncs.com/api/v1/multimodal/conversation';
+                console.log('使用API端点:', apiEndpoint);
+                console.log('使用模型:', API_CONFIG.modelImage);
+                
+                // 发起API请求，根据Python代码参考
+                console.log('请求头:', {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_CONFIG.apiKey}`
+                });
+                
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: API_CONFIG.modelImage,
+                        messages: [
+                            {
+                                role: 'user',
+                                content: [
+                                    {
+                                        text: prompt
+                                    }
+                                ]
+                            }
+                        ],
+                        result_format: 'message',
+                        stream: false,
+                        watermark: false,
+                        prompt_extend: true,
+                        negative_prompt: '',
+                        size: '1080x1920'
+                    })
+                });
+                
+                console.log('图片API响应状态:', response.status);
+                console.log('图片API响应头:', Object.fromEntries(response.headers.entries()));
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    showResult('imageResult', `图片API调用失败:\n状态: ${response.status}\n错误: ${JSON.stringify(errorData)}`, true);
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('API响应数据:', data);
+                
+                // 检查响应数据结构（根据Python代码参考）
+                if (!data || !data.output) {
+                    showResult('imageResult', 'API响应数据结构不正确', true);
+                    return;
+                }
+                
+                // 提取图片URL
+                let imageUrl = '';
+                if (data.output.image) {
+                    imageUrl = data.output.image;
+                } else if (data.output.url) {
+                    imageUrl = data.output.url;
+                } else if (data.output.text) {
+                    // 尝试从文本响应中提取图片URL
+                    const urlMatch = data.output.text.match(/(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif))/);
+                    if (urlMatch) {
+                        imageUrl = urlMatch[0];
+                    }
+                }
+                
+                if (imageUrl) {
+                    showResult('imageResult', `图片API调用成功!\n生成的图片URL: ${imageUrl}`);
+                } else {
+                    showResult('imageResult', `图片API调用成功!\n但响应中没有图片URL\n响应内容: ${JSON.stringify(data.output)}`, true);
+                }
+            } catch (error) {
+                console.error('图片API测试错误:', error);
+                showResult('imageResult', `图片API测试错误:\n${error.toString()}`, true);
+            }
+        }
+        
+        // 测试直接HTTP请求
+        async function testDirectRequest() {
+            showResult('directResult', '正在测试直接HTTP请求...');
+            
+            try {
+                // 使用XMLHttpRequest进行测试，提供更多控制
+                const xhr = new XMLHttpRequest();
+                const prompt = '请生成2026年马年新春贺词。';
+                
+                const requestUrl = buildRequestUrl(API_CONFIG.endpoint);
+                console.log('使用请求URL:', requestUrl);
+                xhr.open('POST', requestUrl, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                // 恢复使用 Authorization 请求头传递阿里云百炼平台的 API 密钥
+                xhr.setRequestHeader('Authorization', `Bearer ${API_CONFIG.apiKey}`);
+                // 添加 CORS.SH API 密钥到请求头中
+                xhr.setRequestHeader('x-cors-api-key', CORS_SH_API_KEY);
+                
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        console.log('直接请求状态:', xhr.status);
+                        console.log('直接请求响应头:', xhr.getAllResponseHeaders());
+                        console.log('直接请求响应:', xhr.responseText);
+                        
+                        if (xhr.status === 200) {
+                            try {
+                                const data = JSON.parse(xhr.responseText);
+                                showResult('directResult', `直接HTTP请求成功!\n响应: ${JSON.stringify(data, null, 2)}`);
+                            } catch (e) {
+                                showResult('directResult', `直接HTTP请求成功，但响应解析失败:\n${xhr.responseText}`, true);
+                            }
+                        } else {
+                            showResult('directResult', `直接HTTP请求失败:\n状态: ${xhr.status}\n响应: ${xhr.responseText}`, true);
+                        }
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    console.error('直接请求网络错误:', xhr.statusText);
+                    showResult('directResult', `直接HTTP请求网络错误:\n${xhr.statusText}`, true);
+                };
+                
+                // 移除请求体中的 api_key 字段，因为我们已经恢复使用 Authorization 请求头
+                xhr.send(JSON.stringify({
+                    model: API_CONFIG.modelText,
+                    messages: [
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    max_tokens: 100
+                }));
+            } catch (error) {
+                console.error('直接请求测试错误:', error);
+                showResult('directResult', `直接请求测试错误:\n${error.toString()}`, true);
+            }
+        }
+    </script>
+</body>
+</html>

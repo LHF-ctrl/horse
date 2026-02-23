@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>马年新春贺词生成器</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 引入Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* 页面加载动画 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffcc33, #ff6633);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader-logo {
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M100,20 L140,80 L180,100 L140,120 L100,180 L60,120 L20,100 L60,80 Z" stroke="%23cc0000" stroke-width="4" fill="%23ffcc33"/><circle cx="100" cy="100" r="10" fill="%23cc0000"/></svg>') center/contain no-repeat;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面加载动画 -->
+    <div class="page-loader" id="page-loader">
+        <div class="loader-logo"></div>
+    </div>
+    
+    <div class="container">
+        <header class="header">
+            <h1>马年新春贺词生成器</h1>
+            <p>2026年，马到成功</p>
+        </header>
+        
+        <main class="main-content">
+            <section class="hero">
+                <div class="horse-animation"></div>
+                <button id="generate-btn" class="btn primary-btn">生成贺词</button>
+            </section>
+            
+            <section id="result-section" class="result-section">
+                <div id="loading" class="loading hidden">
+                    <div class="loading-spinner"></div>
+                    <p>正在生成贺词...</p>
+                </div>
+                
+                <div id="result" class="result hidden">
+                    <h2>新春贺词</h2>
+                    <div id="message" class="message"></div>
+                    
+                    <div class="action-buttons">
+                        <button id="copy-btn" class="btn secondary-btn">复制贺词</button>
+                        <button id="image-btn" class="btn secondary-btn">生成图片</button>
+                        <button id="regenerate-btn" class="btn secondary-btn">重新生成</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p>© 2026 马年新春贺词生成器</p>
+        </footer>
+    </div>
+    
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

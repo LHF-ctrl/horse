@@ -1,0 +1,23 @@
+{
+  "name": "horse-year-greeting-generator",
+  "version": "1.0.0",
+  "description": "2026马年新春贺词生成器 - 使用AI生成马年新春贺词和贺卡图片",
+  "main": "api/generate-image.js",
+  "scripts": {
+    "start": "node proxy-server.js",
+    "dev": "vercel dev"
+  },
+  "keywords": [
+    "马年",
+    "新春",
+    "贺词",
+    "AI",
+    "qwen",
+    "greeting-card"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+@echo off
+chcp 65001 >nul
+
+set "API_URL=https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis"
+set "API_KEY=sk-156a6786ce8545548561ac2b188cfc5c"
+
+echo {"model": "wan2.6-t2v", "input": {"prompt": "一幅史诗级可爱的场景。一只小巧可爱的卡通小猫将军，身穿细节精致的金色盔甲，头戴一个稍大的头盔，勇敢地站在悬崖上。他骑着一匹虽小但英勇的战马，说：青海长云暗雪山，孤城遥望玉门关。黄沙百战穿金甲，不破楼兰终不还。悬崖下方，一支由老鼠组成的、数量庞大、无穷无尽的军队正带着临时制作的武器向前冲锋。这是一个戏剧性的、大规模的战斗场景，灵感来自中国古代的战争史诗。远处的雪山上空，天空乌云密布。整体氛围是可爱与霸气的搞笑和史诗般的融合。"}, "parameters": {"size": "1280*720", "prompt_extend": true, "duration": 10, "audio": true, "shot_type": "multi"}} > request.json
+
+curl --location "%API_URL%" -H "X-DashScope-Async: enable" -H "Authorization: Bearer %API_KEY%" -H "Content-Type: application/json" -d @request.json
+
+del request.json
+
+pause

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>马年新春贺词生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #ffcc33, #ff6633);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="%23ff6633" opacity="0.3"/><circle cx="75" cy="25" r="2" fill="%23ff6633" opacity="0.3"/><circle cx="25" cy="75" r="2" fill="%23ff6633" opacity="0.3"/><circle cx="75" cy="75" r="2" fill="%23ff6633" opacity="0.3"/></svg>') repeat;
+            animation: float 20s linear infinite;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #cc0000;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+            position: relative;
+        }
+
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        .horse-animation {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M150,50 Q170,30 190,50 Q170,70 150,50" stroke="%23cc0000" stroke-width="4" fill="none"/><path d="M100,80 Q120,60 140,80 Q120,100 100,80" stroke="%23cc0000" stroke-width="4" fill="none"/><path d="M50,110 Q70,90 90,110 Q70,130 50,110" stroke="%23cc0000" stroke-width="4" fill="none"/><circle cx="100" cy="100" r="80" stroke="%23ffcc33" stroke-width="2" fill="none"/></svg>') center/contain no-repeat;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            min-width: 150px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(45deg, #cc0000, #ff6633);
+            color: white;
+            box-shadow: 0 5px 15px rgba(204, 0, 0, 0.4);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(204, 0, 0, 0.6);
+        }
+
+        .secondary-btn {
+            background: #f8f8f8;
+            color: #333;
+            border: 2px solid #ffcc33;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .secondary-btn:hover {
+            background: #ffcc33;
+            color: #333;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 204, 51, 0.4);
+        }
+
+        .result-section {
+            margin-top: 40px;
+        }
+
+        .result {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease;
+        }
+
+        .result h2 {
+            font-size: 2rem;
+            color: #cc0000;
+            margin-bottom: 30px;
+        }
+
+        .message {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 204, 51, 0.1);
+            border-radius: 15px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 204, 51, 0.3);
+            border-top: 6px solid #cc0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            color: #666;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-25%, -25%) rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .image-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+        
+        .image-container h3 {
+            font-size: 1.5rem;
+            color: #cc0000;
+            margin-bottom: 20px;
+        }
+        
+        .image-wrapper {
+            max-width: 100%;
+            margin: 0 auto 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .generated-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+            max-height: 600px;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .header { padding: 30px 0; margin-bottom: 20px; }
+            .header h1 { font-size: 2rem; }
+            .header p { font-size: 1rem; }
+            .main-content { padding: 20px; margin-bottom: 20px; }
+            .hero { padding: 40px 10px; }
+            .horse-animation { width: 150px; height: 150px; margin-bottom: 30px; }
+            .btn { padding: 12px 24px; font-size: 1rem; min-width: 120px; margin: 5px; }
+            .result { padding: 30px 15px; }
+            .result h2 { font-size: 1.5rem; margin-bottom: 20px; }
+            .message { font-size: 1.1rem; padding: 15px; min-height: 180px; }
+            .action-buttons { flex-direction: column; align-items: center; }
+            .action-buttons .btn { width: 80%; margin: 8px 0; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(45deg, #ffcc33, #ff6633); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(45deg, #cc0000, #ff6633); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>马年新春贺词生成器</h1>
+            <p>2026年，马到成功</p>
+        </header>
+        
+        <main class="main-content">
+            <section class="hero">
+                <div class="horse-animation"></div>
+                <button id="generate-btn" class="btn primary-btn">生成贺词</button>
+            </section>
+            
+            <section id="result-section" class="result-section">
+                <div id="loading" class="loading hidden">
+                    <div class="loading-spinner"></div>
+                    <p>正在生成贺词...</p>
+                </div>
+                
+                <div id="result" class="result hidden">
+                    <h2>新春贺词</h2>
+                    <div id="message" class="message"></div>
+                    
+                    <div id="image-container" class="image-container hidden">
+                        <h3>生成的贺卡</h3>
+                        <div class="image-wrapper">
+                            <img id="generated-image" src="" alt="马年贺卡" class="generated-image">
+                        </div>
+                        <button id="download-image-btn" class="btn secondary-btn">下载图片</button>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="copy-btn" class="btn secondary-btn">复制贺词</button>
+                        <button id="image-btn" class="btn secondary-btn">生成图片</button>
+                        <button id="regenerate-btn" class="btn secondary-btn">重新生成</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p>© 2026 马年新春贺词生成器</p>
+        </footer>
+    </div>
+    
+    <script>
+        const API_CONFIG = {
+            endpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+            multimodalEndpoint: 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation',
+            apiKey: 'sk-156a6786ce8545548561ac2b188cfc5c',
+            modelText: 'qwen3-max',
+            modelImage: 'qwen-image-max',
+            timeout: 30000,
+            debug: true
+        };
+
+        let elements;
+        let currentMessage = '';
+
+        async function generateMessage() {
+            console.log('开始生成贺词');
+            const randomSeed = Math.floor(Math.random() * 10000);
+            const prompt = `请生成2026年马年新春贺词，要求：
+1. 包含马年相关元素和祝福语
+2. 语言简洁优美，适合长辈使用
+3. 符合新春喜庆氛围
+4. 内容积极向上
+5. 长度适中，适合在贺卡上展示
+
+随机种子: ${randomSeed}`;
+            
+            console.log('生成贺词提示词:', prompt);
+
+            try {
+                console.log('调用文本生成API');
+                const apiEndpoint = API_CONFIG.endpoint + '/chat/completions';
+                console.log('使用API端点:', apiEndpoint);
+                console.log('使用模型:', API_CONFIG.modelText);
+                
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('API调用超时')), API_CONFIG.timeout);
+                });
+                
+                const fetchPromise = fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: API_CONFIG.modelText,
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 200,
+                        temperature: 0.9,
+                        top_p: 0.95,
+                        stream: false
+                    })
+                });
+                
+                const response = await Promise.race([fetchPromise, timeoutPromise]);
+
+                console.log('API响应状态:', response.status);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('API错误详情:', errorData);
+                    throw new Error(`API调用失败: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('API响应数据:', data);
+
+                if (!data || !data.choices || !data.choices[0] || !data.choices[0].message) {
+                    throw new Error('API响应数据结构不正确');
+                }
+
+                return data.choices[0].message.content;
+            } catch (error) {
+                console.error('生成贺词失败:', error);
+                throw error;
+            }
+        }
+
+        async function generateImage(message) {
+            console.log('开始生成图片');
+            console.log('贺词内容:', message);
+
+            try {
+                console.log('调用qwen-image-max模型生成图片');
+                
+                const requestBody = {
+                    model: API_CONFIG.modelImage,
+                    input: {
+                        messages: [
+                            {
+                                role: 'user',
+                                content: [
+                                    {
+                                        text: `创建一张2026年马年新春贺卡，9:16比例长图。画面要有浓厚的新春氛围和马年元素，包括红色背景、金色装饰、马的图案等。中央位置展示以下贺词：\n${message}\n整体设计喜庆、典雅，适合长辈使用。`
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    parameters: {
+                        negative_prompt: '低分辨率，低画质，肢体畸形，手指畸形，画面过饱和，蜡像感，人脸无细节，过度光滑，画面具有AI感。构图混乱。文字模糊，扭曲。',
+                        prompt_extend: true,
+                        watermark: false,
+                        size: '1080*1920'
+                    }
+                };
+                
+                console.log('请求体:', requestBody);
+                
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('API调用超时')), API_CONFIG.timeout);
+                });
+                
+                const fetchPromise = fetch('/api/generate-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        authorization: `Bearer ${API_CONFIG.apiKey}`,
+                        body: requestBody
+                    })
+                });
+                
+                const response = await Promise.race([fetchPromise, timeoutPromise]);
+
+                console.log('API响应状态:', response.status);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('API错误详情:', errorData);
+                    throw new Error(`API调用失败: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('API响应数据:', data);
+
+                let imageUrl = '';
+                if (data.output && data.output.choices && data.output.choices[0] && 
+                    data.output.choices[0].message && data.output.choices[0].message.content && 
+                    data.output.choices[0].message.content[0] && data.output.choices[0].message.content[0].image) {
+                    imageUrl = data.output.choices[0].message.content[0].image;
+                    console.log('从output.choices[0].message.content[0].image获取图片URL:', imageUrl);
+                }
+                
+                if (imageUrl) {
+                    console.log('成功获取图片URL:', imageUrl);
+                    return imageUrl;
+                } else {
+                    throw new Error('API响应中没有图片URL');
+                }
+            } catch (error) {
+                console.error('生成图片失败:', error);
+                throw error;
+            }
+        }
+
+        function downloadImage(imageUrl, filename = '马年贺卡.png') {
+            console.log('开始下载图片:', imageUrl);
+            
+            if (!imageUrl || imageUrl === 'about:blank') {
+                console.error('无效的图片URL');
+                showToast('无效的图片URL');
+                return;
+            }
+            
+            const a = document.createElement('a');
+            a.href = imageUrl;
+            a.download = filename;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            
+            setTimeout(() => {
+                try {
+                    a.click();
+                    console.log('图片下载已触发');
+                    showToast('图片下载已开始');
+                } catch (error) {
+                    console.error('点击下载链接失败:', error);
+                    showToast('下载失败，请手动保存图片');
+                } finally {
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                    }, 100);
+                }
+            }, 100);
+        }
+
+        function initApp() {
+            console.log('初始化应用');
+            elements = {
+                generateBtn: document.getElementById('generate-btn'),
+                copyBtn: document.getElementById('copy-btn'),
+                imageBtn: document.getElementById('image-btn'),
+                regenerateBtn: document.getElementById('regenerate-btn'),
+                downloadImageBtn: document.getElementById('download-image-btn'),
+                loading: document.getElementById('loading'),
+                result: document.getElementById('result'),
+                message: document.getElementById('message'),
+                imageContainer: document.getElementById('image-container'),
+                generatedImage: document.getElementById('generated-image')
+            };
+            
+            console.log('元素获取成功:', elements);
+            bindEventListeners();
+        }
+
+        function bindEventListeners() {
+            console.log('绑定事件监听器');
+            elements.generateBtn.addEventListener('click', handleGenerate);
+            elements.copyBtn.addEventListener('click', handleCopy);
+            elements.imageBtn.addEventListener('click', handleImage);
+            elements.regenerateBtn.addEventListener('click', handleGenerate);
+            elements.downloadImageBtn.addEventListener('click', handleDownloadImage);
+        }
+
+        async function handleGenerate() {
+            console.log('处理生成贺词');
+            showLoading();
+            hideResult();
+
+            try {
+                currentMessage = await generateMessage();
+                console.log('生成的贺词:', currentMessage);
+                displayMessage(currentMessage);
+                hideLoading();
+                showResult();
+                
+                elements.imageContainer.classList.add('hidden');
+                elements.generatedImage.src = '';
+            } catch (error) {
+                console.error('处理生成贺词失败:', error);
+                hideLoading();
+                showError('生成贺词失败，请稍后重试');
+            }
+        }
+
+        function handleCopy() {
+            if (!currentMessage) return;
+
+            navigator.clipboard.writeText(currentMessage)
+                .then(() => {
+                    showToast('贺词已复制到剪贴板');
+                })
+                .catch(err => {
+                    console.error('复制失败:', err);
+                    showToast('复制失败，请手动复制');
+                });
+        }
+
+        async function handleImage() {
+            if (!currentMessage) return;
+
+            showLoading('正在生成图片...');
+
+            try {
+                const imageUrl = await generateImage(currentMessage);
+                hideLoading();
+                
+                elements.generatedImage.src = imageUrl;
+                elements.imageContainer.classList.remove('hidden');
+                showToast('图片生成成功');
+            } catch (error) {
+                console.error('生成图片失败:', error);
+                hideLoading();
+                showToast('生成图片失败，请稍后重试');
+            }
+        }
+        
+        function handleDownloadImage() {
+            const imageUrl = elements.generatedImage.src;
+            if (!imageUrl) {
+                showToast('没有可下载的图片');
+                return;
+            }
+            
+            downloadImage(imageUrl);
+        }
+
+        function showLoading(text = '正在生成贺词...') {
+            elements.loading.querySelector('p').textContent = text;
+            elements.loading.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            elements.loading.classList.add('hidden');
+        }
+
+        function showResult() {
+            elements.result.classList.remove('hidden');
+        }
+
+        function hideResult() {
+            elements.result.classList.add('hidden');
+        }
+
+        function showError(message) {
+            elements.message.textContent = message;
+            elements.message.style.color = '#cc0000';
+            showResult();
+        }
+
+        function displayMessage(message) {
+            elements.message.textContent = message;
+            elements.message.style.color = '#333';
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            Object.assign(toast.style, {
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'rgba(0, 0, 0, 0.8)',
+                color: 'white',
+                padding: '15px 25px',
+                borderRadius: '25px',
+                fontSize: '1rem',
+                zIndex: '9999',
+                opacity: '0',
+                transition: 'opacity 0.3s ease'
+            });
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '1';
+            }, 100);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM加载完成');
+                initApp();
+            });
+        } else {
+            console.log('DOM已加载，直接初始化应用');
+            initApp();
+        }
+    </script>
+</body>
+</html>
